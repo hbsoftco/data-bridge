@@ -1,0 +1,299 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model cites {
+  id          BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  name        String @db.VarChar(30)
+  slug        String @db.VarChar(30)
+  province_id BigInt @db.UnsignedBigInt
+}
+
+model data {
+  id               BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  app              data_app
+  user_id          BigInt           @db.UnsignedBigInt
+  steps            Int              @db.UnsignedInt
+  distance         Int              @db.UnsignedInt
+  calories         Float
+  started_at       DateTime         @db.DateTime(0)
+  finished_at      DateTime         @db.DateTime(0)
+  start_location   String?          @db.LongText
+  end_location     String?          @db.LongText
+  maxSpeedLocation String?          @db.LongText
+  maxSpeed         Decimal?         @db.Decimal(8, 2)
+  averageSpeed     Decimal?         @db.Decimal(8, 2)
+  type             data_type?       @default(session)
+  sessionType      data_sessionType
+  created_at       DateTime?        @db.Timestamp(0)
+  updated_at       DateTime?        @db.Timestamp(0)
+  added_by         data_added_by    @default(system)
+  users            users            @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "data_user_id_foreign")
+  locations        locations[]
+
+  @@index([finished_at], map: "data_end_date")
+  @@index([started_at], map: "data_start_date")
+  @@index([user_id], map: "data_user_id_foreign")
+}
+
+model failed_jobs {
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  uuid       String   @unique(map: "failed_jobs_uuid_unique") @db.VarChar(255)
+  connection String   @db.Text
+  queue      String   @db.Text
+  payload    String   @db.LongText
+  exception  String   @db.LongText
+  failed_at  DateTime @default(now()) @db.Timestamp(0)
+}
+
+model locations {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  data_id    BigInt    @db.UnsignedBigInt
+  locations  String    @db.LongText
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  data       data      @relation(fields: [data_id], references: [id], onUpdate: Restrict, map: "locations_data_id_foreign")
+
+  @@index([data_id], map: "locations_data_id_foreign")
+}
+
+model migrations {
+  id        Int    @id @default(autoincrement()) @db.UnsignedInt
+  migration String @db.VarChar(255)
+  batch     Int
+}
+
+model notifications {
+  id          BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
+  app         notifications_app
+  user_id     BigInt            @db.UnsignedBigInt
+  title       String?           @db.VarChar(255)
+  summery     String?           @db.VarChar(255)
+  description String?           @db.Text
+  delivered   Int               @default(1) @db.UnsignedTinyInt
+  created_at  DateTime?         @db.Timestamp(0)
+  updated_at  DateTime?         @db.Timestamp(0)
+  users       users             @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "notifications_user_id_foreign")
+
+  @@index([user_id], map: "notifications_user_id_foreign")
+}
+
+model otp {
+  id           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  app          otp_app
+  user_id      BigInt    @db.UnsignedBigInt
+  token        Int       @db.UnsignedMediumInt
+  retried      Int       @default(0) @db.UnsignedTinyInt
+  used         Boolean   @default(false)
+  date_created DateTime  @db.DateTime(0)
+  created_at   DateTime? @db.Timestamp(0)
+  updated_at   DateTime? @db.Timestamp(0)
+  users        users     @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "otp_user_id_foreign")
+
+  @@index([token], map: "otp_token_index")
+  @@index([user_id], map: "otp_user_id_foreign")
+}
+
+model password_reset_tokens {
+  email      String    @id @db.VarChar(255)
+  token      String    @db.VarChar(255)
+  created_at DateTime? @db.Timestamp(0)
+}
+
+model personal_access_tokens {
+  id             BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  tokenable_type String    @db.VarChar(255)
+  tokenable_id   BigInt    @db.UnsignedBigInt
+  name           String    @db.VarChar(255)
+  token          String    @unique(map: "personal_access_tokens_token_unique") @db.VarChar(64)
+  abilities      String?   @db.Text
+  last_used_at   DateTime? @db.Timestamp(0)
+  expires_at     DateTime? @db.Timestamp(0)
+  created_at     DateTime? @db.Timestamp(0)
+  updated_at     DateTime? @db.Timestamp(0)
+
+  @@index([tokenable_type, tokenable_id], map: "personal_access_tokens_tokenable_type_tokenable_id_index")
+}
+
+model provinces {
+  id   BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  name String @db.VarChar(20)
+  slug String @db.VarChar(20)
+}
+
+model settings {
+  id          String        @unique(map: "settings_id_unique") @db.VarChar(16)
+  app         settings_app
+  name        String        @db.VarChar(64)
+  description String        @db.Text
+  value       String        @db.VarChar(255)
+  type        settings_type
+  created_at  DateTime?     @db.Timestamp(0)
+  updated_at  DateTime?     @db.Timestamp(0)
+}
+
+model subscriptions {
+  id                          BigInt                 @id @default(autoincrement()) @db.UnsignedBigInt
+  user_id                     BigInt                 @db.UnsignedBigInt
+  provider                    subscriptions_provider
+  payment_date                DateTime               @db.DateTime(0)
+  end_date                    DateTime               @db.DateTime(0)
+  purchase_reference_code     String?                @db.VarChar(255)
+  subscription_reference_code String?                @db.VarChar(255)
+  price                       Float                  @default(0.00)
+  description                 String?                @db.Text
+  extra                       String?                @db.LongText
+  created_at                  DateTime?              @db.Timestamp(0)
+  updated_at                  DateTime?              @db.Timestamp(0)
+}
+
+model tokens {
+  id           BigInt     @id @default(autoincrement()) @db.UnsignedBigInt
+  app          tokens_app
+  user_id      BigInt     @db.UnsignedBigInt
+  token        String     @db.VarChar(64)
+  device       String?    @db.VarChar(255)
+  platform     String?    @db.VarChar(255)
+  ip           String?    @db.VarChar(15)
+  location     String?    @db.VarChar(255)
+  provider     String?    @db.VarChar(255)
+  date_created DateTime   @db.DateTime(0)
+  created_at   DateTime?  @db.Timestamp(0)
+  updated_at   DateTime?  @db.Timestamp(0)
+  users        users      @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "tokens_user_id_foreign")
+
+  @@index([user_id], map: "tokens_user_id_foreign")
+}
+
+model users {
+  id                         BigInt          @id @default(autoincrement()) @db.UnsignedBigInt
+  app                        users_app
+  phone                      String?         @db.VarChar(12)
+  first_name                 String?         @db.VarChar(32)
+  last_name                  String?         @db.VarChar(32)
+  role                       users_role      @default(user)
+  email                      String?         @db.VarChar(128)
+  password                   String?         @db.VarChar(255)
+  fcm_token                  String?         @db.VarChar(255)
+  gender                     users_gender?
+  physical_details           String?         @db.LongText
+  allow_nearby               Boolean         @default(true)
+  address                    String?         @db.Text
+  birthday_                  String?         @map("birthday-") @db.VarChar(255)
+  credits                    Int             @default(0)
+  profile_picture            String?         @db.Text
+  profile_picture_thumbnail  String?         @db.Text
+  referrer_user_id           BigInt?         @db.UnsignedBigInt
+  verified                   Int             @default(0) @db.UnsignedTinyInt
+  blocked                    Int             @default(0) @db.UnsignedTinyInt
+  block_reason               String?         @db.Text
+  get_refer_gift             Int             @default(0) @db.UnsignedTinyInt
+  weight                     Decimal?        @db.Decimal(5, 2)
+  height                     Decimal?        @db.Decimal(5, 2)
+  birthday                   BigInt?
+  goal_steps                 Int             @default(5000)
+  last_location_lat          Float?
+  last_location_long         Float?
+  last_location_updated_time DateTime?       @db.DateTime(0)
+  created_at                 DateTime?       @db.Timestamp(0)
+  updated_at                 DateTime?       @db.Timestamp(0)
+  deleted_at                 DateTime?       @db.Timestamp(0)
+  data                       data[]
+  notifications              notifications[]
+  otp                        otp[]
+  tokens                     tokens[]
+  users                      users?          @relation("usersTousers", fields: [referrer_user_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "users_referrer_user_id_foreign")
+  other_users                users[]         @relation("usersTousers")
+
+  @@index([referrer_user_id], map: "users_referrer_user_id_foreign")
+}
+
+enum tokens_app {
+  step_counter
+  step_up
+  activity_fit
+  running_up
+  cycling_up
+}
+
+enum settings_app {
+  step_counter
+  step_up
+  activity_fit
+  running_up
+  cycling_up
+}
+
+enum otp_app {
+  step_counter
+  step_up
+  activity_fit
+  running_up
+  cycling_up
+}
+
+enum data_app {
+  step_counter
+  step_up
+  activity_fit
+  running_up
+  cycling_up
+}
+
+enum users_app {
+  step_counter
+  step_up
+  activity_fit
+  running_up
+  cycling_up
+}
+
+enum notifications_app {
+  step_counter
+  step_up
+  activity_fit
+  running_up
+  cycling_up
+}
+
+enum subscriptions_provider {
+  bazzar
+  google
+  in_app
+}
+
+enum settings_type {
+  text
+  number
+}
+
+enum users_role {
+  user
+  admin
+}
+
+enum users_gender {
+  female
+  male
+}
+
+enum data_type {
+  day
+  session
+}
+
+enum data_sessionType {
+  walking
+  running
+  biking
+}
+
+enum data_added_by {
+  system
+  user
+}
