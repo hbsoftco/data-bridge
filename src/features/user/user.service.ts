@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/core/database/database.service';
+import { convertBigIntToString } from 'src/core/utils/convertBigIntToString.util';
 
 @Injectable()
 export class UserService {
@@ -12,15 +13,7 @@ export class UserService {
     });
 
     // Convert BigInt values to string for each user
-    for (const user of users) {
-      for (const key in user) {
-        if (typeof user[key] === 'bigint') {
-          user[key] = user[key].toString();
-        }
-      }
-    }
-
-    return users;
+    return users.map(convertBigIntToString);
   }
 
   async findOne(id: number) {
@@ -31,14 +24,6 @@ export class UserService {
     });
 
     // Convert BigInt values to string
-    if (user) {
-      for (const key in user) {
-        if (typeof user[key] === 'bigint') {
-          user[key] = user[key].toString();
-        }
-      }
-    }
-
-    return user;
+    return convertBigIntToString(user);
   }
 }
