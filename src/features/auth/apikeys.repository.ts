@@ -5,8 +5,8 @@ import { ApiKeyEntity } from './apikey.entity';
 export class ApiKeysRepository {
   private keys: ApiKeyEntity[] = [
     {
-      name: 'Microservice Key',
-      key: '37a5sde8-ee25-t58a-gf2f-75812989890a',
+      name: 'Panel Key',
+      key: process.env.API_KEY,
     },
   ];
 

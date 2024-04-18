@@ -15,6 +15,7 @@ import * as Joi from 'joi';
           .default('development'),
         PORT: Joi.number().port().default(3000).required(),
         DATABASE_URL: Joi.string().required(),
+        API_KEY: Joi.string().required(),
       }),
     }),
     UserModule,
