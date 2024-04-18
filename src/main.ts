@@ -19,20 +19,26 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   const configService = app.get(ConfigService);
-  app.use(
-    ['/swagger'],
-    basicAuth({
-      challenge: true,
-      users: {
-        [configService.get('SWAGGER_USER')]:
-          configService.get('SWAGGER_PASSWORD'),
-      },
-    }),
-  );
+  const swaggerUser = configService.get<string>('SWAGGER_USER');
+  const swaggerPassword = configService.get<string>('SWAGGER_PASSWORD');
+
+  if (swaggerUser && swaggerPassword) {
+    const users: { [username: string]: string } = {};
+    users[swaggerUser] = swaggerPassword;
+
+    app.use(
+      ['/swagger'],
+      basicAuth({
+        challenge: true,
+        users,
+      }),
+    );
+  }
 
   // Swagger
   setupSwagger(app);
 
   await app.listen(3000);
 }
+
 bootstrap();
