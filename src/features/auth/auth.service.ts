@@ -7,8 +7,6 @@ export class AuthService {
   constructor(private apiKeysRepository: ApiKeysRepository) {}
 
   public findKey(key: string): ApiKeyEntity | undefined {
-    console.log('===========================>apiKeysRepository');
-
     return this.apiKeysRepository.findOne(key);
   }
 }

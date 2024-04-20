@@ -10,8 +10,14 @@ export class UserController {
 
   @UseGuards(ApiKeyGuard)
   @Get()
-  findAll(@Query('page') page: number, @Query('pageSize') pageSize: number) {
-    return this.userService.findAll(page, pageSize);
+  async findAll(
+    @Query('page') page: number,
+    @Query('pageSize') pageSize: number,
+  ) {
+    const data = await this.userService.findAll(page, pageSize);
+    const count = await this.userService.count();
+
+    return { data, count };
   }
 
   @UseGuards(ApiKeyGuard)

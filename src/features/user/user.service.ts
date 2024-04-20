@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-// import { DatabaseService } from 'src/core/database/database.service';
 import { DatabaseService } from '../../core/database/database.service';
-// import { convertBigIntToString } from 'src/core/utils/convertBigIntToString.util';
 import { convertBigIntToString } from '../../core/utils/convertBigIntToString.util';
 
 @Injectable()
@@ -27,5 +25,11 @@ export class UserService {
 
     // Convert BigInt values to string
     return convertBigIntToString(user);
+  }
+
+  async count() {
+    try {
+      return await this.databaseService.users.count();
+    } catch (error) {}
   }
 }
