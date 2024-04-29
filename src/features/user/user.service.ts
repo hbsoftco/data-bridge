@@ -103,19 +103,39 @@ export class UserService {
     page: number,
     pageSize: number,
     sessionType: string,
+    fromDate: string,
+    toDate: string,
   ) {
     const skip = (page - 1) * pageSize;
-    console.log('==================>', sessionType);
+
+    const whereClause: any = { user_id: userId };
+
+    // If filter is provided, add condition for first_name
+    if (sessionType && sessionType !== null && sessionType !== 'null') {
+      whereClause.sessionType = sessionType;
+    }
+
+    if (
+      fromDate &&
+      fromDate !== null &&
+      fromDate !== 'null' &&
+      toDate &&
+      toDate !== null &&
+      toDate !== 'null'
+    ) {
+      whereClause.created_at = {
+        gte: new Date(fromDate),
+        lte: new Date(toDate),
+      };
+    }
 
     const userDataList = await this.databaseService.data.findMany({
-      where: { user_id: userId },
+      where: whereClause,
       orderBy: { started_at: 'desc' }, // You can change the ordering if needed
       skip,
       take: +pageSize,
       include: { locations: true }, // Include related locations if needed
     });
-
-    console.log(userDataList);
 
     return userDataList.map(convertBigIntToString);
   }

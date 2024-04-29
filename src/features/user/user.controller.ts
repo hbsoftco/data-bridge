@@ -46,14 +46,18 @@ export class UserController {
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
     @Query('sessionType') sessionType: string,
+    @Query('fromDate') fromDate: string,
+    @Query('toDate') toDate: string,
   ) {
     const data = await this.userService.getUserDataList(
       +userId,
       page,
       pageSize,
       sessionType,
+      fromDate,
+      toDate,
     );
 
-    return { data };
+    return { data, count: 100 };
   }
 }
