@@ -10,6 +10,7 @@ export class UserService {
     page: number,
     pageSize: number,
     filter: string,
+    haveEmail: boolean | string,
     sex: number,
     fromDate: string,
     toDate: string,
@@ -18,8 +19,17 @@ export class UserService {
 
     // If filter is provided, add condition for first_name
     if (filter && filter !== null && filter !== 'null') {
-      whereClause.first_name = {
-        contains: filter,
+      whereClause.OR = [
+        { first_name: { contains: filter } },
+        { email: { contains: filter } },
+        { phone: { contains: filter } },
+      ];
+    }
+
+    // If haveEmail is true, add condition for email
+    if (haveEmail == 'true' && haveEmail) {
+      whereClause.email = {
+        not: null,
       };
     }
 
@@ -63,7 +73,13 @@ export class UserService {
     return convertBigIntToString(user);
   }
 
-  async count(filter: string, sex: number, fromDate: string, toDate: string) {
+  async count(
+    filter: string,
+    sex: number,
+    fromDate: string,
+    toDate: string,
+    haveEmail: boolean | string,
+  ) {
     try {
       const whereClause: any = {};
 
@@ -71,6 +87,13 @@ export class UserService {
       if (filter && filter !== null && filter !== 'null') {
         whereClause.first_name = {
           contains: filter,
+        };
+      }
+
+      // If haveEmail is true, add condition for email
+      if (haveEmail == 'true' && haveEmail) {
+        whereClause.email = {
+          not: null,
         };
       }
 
@@ -103,6 +126,7 @@ export class UserService {
     page: number,
     pageSize: number,
     sessionType: string,
+    type: string,
     fromDate: string,
     toDate: string,
   ) {
@@ -110,9 +134,12 @@ export class UserService {
 
     const whereClause: any = { user_id: userId };
 
-    // If filter is provided, add condition for first_name
     if (sessionType && sessionType !== null && sessionType !== 'null') {
       whereClause.sessionType = sessionType;
+    }
+
+    if (type && type !== null && type !== 'null') {
+      whereClause.type = type;
     }
 
     if (
@@ -138,5 +165,52 @@ export class UserService {
     });
 
     return userDataList.map(convertBigIntToString);
+  }
+
+  async userDataCount(
+    userId: number,
+    sessionType: string,
+    type: string,
+    fromDate: string,
+    toDate: string,
+  ) {
+    try {
+      const whereClause: any = { user_id: userId };
+
+      if (sessionType && sessionType !== null && sessionType !== 'null') {
+        whereClause.sessionType = sessionType;
+      }
+
+      if (type && type !== null && type !== 'null') {
+        whereClause.type = type;
+      }
+
+      if (
+        fromDate &&
+        fromDate !== null &&
+        fromDate !== 'null' &&
+        toDate &&
+        toDate !== null &&
+        toDate !== 'null'
+      ) {
+        whereClause.created_at = {
+          gte: new Date(fromDate),
+          lte: new Date(toDate),
+        };
+      }
+      return await this.databaseService.data.count({
+        where: whereClause,
+      });
+    } catch (error) {}
+  }
+
+  async blockUser(id: number, block: boolean) {
+    const user = await this.databaseService.users.update({
+      where: { id },
+      data: { blocked: block ? 1 : 0 },
+    });
+
+    // Convert BigInt values to string
+    return convertBigIntToString(user);
   }
 }
