@@ -107,4 +107,21 @@ export class UserController {
 
     return { data };
   }
+
+  @UseGuards(ApiKeyGuard)
+  @Get('/statistics/users')
+  async statistics() {
+    const getUsersCount = await this.userService.getUsersCount();
+    const getMaleUsersCount = await this.userService.getMaleUsersCount();
+    const getFemaleUsersCount = await this.userService.getFemaleUsersCount();
+    const getUnknownSexUsersCount =
+      await this.userService.getUnknownSexUsersCount();
+
+    return {
+      getUsersCount,
+      getMaleUsersCount,
+      getFemaleUsersCount,
+      getUnknownSexUsersCount,
+    };
+  }
 }

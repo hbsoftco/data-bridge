@@ -229,4 +229,26 @@ export class UserService {
     // Convert BigInt values to string
     return convertBigIntToString(user);
   }
+
+  async getUsersCount(): Promise<number> {
+    return await this.databaseService.users.count();
+  }
+
+  async getMaleUsersCount(): Promise<number> {
+    return await this.databaseService.users.count({
+      where: { gender: 'male' },
+    });
+  }
+
+  async getFemaleUsersCount(): Promise<number> {
+    return await this.databaseService.users.count({
+      where: { gender: 'female' },
+    });
+  }
+
+  async getUnknownSexUsersCount(): Promise<number> {
+    return await this.databaseService.users.count({
+      where: { gender: null },
+    });
+  }
 }
