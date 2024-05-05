@@ -6,6 +6,7 @@ import {
   UseGuards,
   Post,
   Body,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -91,6 +92,18 @@ export class UserController {
   @Post(':id/block')
   async blockUser(@Param('id') id: string, @Body('block') block: boolean) {
     const data = await this.userService.blockUser(+id, block);
+
+    return { data };
+  }
+
+  @UseGuards(ApiKeyGuard)
+  @Get('/export')
+  async exportUsers(@Query('type') type: 'email' | 'phone') {
+    if (!type) {
+      throw new BadRequestException('Parameter "type" is required.');
+    }
+
+    const data = await this.userService.exportUsers(type);
 
     return { data };
   }

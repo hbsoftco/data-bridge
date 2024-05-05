@@ -62,6 +62,17 @@ export class UserService {
     return users.map(convertBigIntToString);
   }
 
+  async exportUsers(type: 'email' | 'phone') {
+    const users = await this.databaseService.users.findMany({
+      select: {
+        [type]: true,
+      },
+    });
+
+    // Convert BigInt values to string
+    return users.map(convertBigIntToString);
+  }
+
   async findOne(id: number) {
     const user = await this.databaseService.users.findUnique({
       where: {
