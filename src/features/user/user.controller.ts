@@ -97,7 +97,7 @@ export class UserController {
   }
 
   @UseGuards(ApiKeyGuard)
-  @Get('/export')
+  @Get('/export/users')
   async exportUsers(@Query('type') type: 'email' | 'phone') {
     if (!type) {
       throw new BadRequestException('Parameter "type" is required.');

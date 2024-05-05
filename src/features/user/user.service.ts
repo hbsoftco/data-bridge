@@ -64,6 +64,11 @@ export class UserService {
 
   async exportUsers(type: 'email' | 'phone') {
     const users = await this.databaseService.users.findMany({
+      where: {
+        [type]: {
+          not: null,
+        },
+      },
       select: {
         [type]: true,
       },
