@@ -1,42 +1,27 @@
-import {
-  Controller,
-  Get,
-  // Post,
-  // Body,
-  // Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body } from '@nestjs/common';
 import { AppService } from './app.service';
-// import { CreateAppDto } from './dto/create-app.dto';
-// import { UpdateAppDto } from './dto/update-app.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { CreateAppDto } from './dto/create-app.dto';
 
-@Controller('app')
+@ApiTags('App')
+@Controller({ path: 'app', version: '1' })
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  // @Post()
-  // create(@Body() createAppDto: CreateAppDto) {
-  //   return this.appService.create(createAppDto);
-  // }
+  @Post()
+  async create(@Body() createAppDto: CreateAppDto) {
+    const status = await this.appService.findByKey('appVersion');
+
+    if (status) {
+      console.log('The record found, You should update it');
+      return this.appService.update(createAppDto);
+    } else {
+      return this.appService.create(createAppDto);
+    }
+  }
 
   @Get()
   findAll() {
-    return this.appService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.appService.findOne(+id);
-  }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateAppDto: UpdateAppDto) {
-  //   return this.appService.update(+id, updateAppDto);
-  // }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.appService.remove(+id);
+    return this.appService.findAppSetting();
   }
 }

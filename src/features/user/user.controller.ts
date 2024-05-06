@@ -59,7 +59,7 @@ export class UserController {
   @UseGuards(ApiKeyGuard)
   @Get(':id/data')
   async getUserDataList(
-    @Param('userId') id: string,
+    @Param('id') id: string,
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
     @Query('sessionType') sessionType: string,
