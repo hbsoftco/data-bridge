@@ -148,7 +148,11 @@ export class UserService {
   ) {
     const skip = (page - 1) * pageSize;
 
-    const whereClause: any = { user_id: id };
+    const whereClause: any = {
+      user_id: {
+        equals: id,
+      },
+    };
 
     if (sessionType && sessionType !== null && sessionType !== 'null') {
       whereClause.sessionType = sessionType;
