@@ -11,6 +11,7 @@ export class UserService {
     pageSize: number,
     filter: string,
     haveEmail: boolean | string,
+    havePhone: boolean | string,
     sex: number,
     fromDate: string,
     toDate: string,
@@ -29,6 +30,13 @@ export class UserService {
     // If haveEmail is true, add condition for email
     if (haveEmail == 'true' && haveEmail) {
       whereClause.email = {
+        not: null,
+      };
+    }
+
+    // If havePhone is true, add condition for phone
+    if (havePhone == 'true' && havePhone) {
+      whereClause.phone = {
         not: null,
       };
     }
@@ -95,6 +103,7 @@ export class UserService {
     fromDate: string,
     toDate: string,
     haveEmail: boolean | string,
+    havePhone: boolean | string,
   ) {
     try {
       const whereClause: any = {};
@@ -109,6 +118,13 @@ export class UserService {
       // If haveEmail is true, add condition for email
       if (haveEmail == 'true' && haveEmail) {
         whereClause.email = {
+          not: null,
+        };
+      }
+
+      // If havePhone is true, add condition for email
+      if (havePhone == 'true' && havePhone) {
+        whereClause.phone = {
           not: null,
         };
       }

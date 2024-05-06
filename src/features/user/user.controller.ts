@@ -25,6 +25,7 @@ export class UserController {
     @Query('filter') filter: string,
     @Query('sex') sex: number,
     @Query('haveEmail') haveEmail: boolean,
+    @Query('havePhone') havePhone: boolean,
     @Query('fromDate') fromDate: string,
     @Query('toDate') toDate: string,
   ) {
@@ -32,6 +33,7 @@ export class UserController {
       page,
       pageSize,
       filter,
+      havePhone,
       haveEmail,
       sex,
       fromDate,
@@ -43,6 +45,7 @@ export class UserController {
       fromDate,
       toDate,
       haveEmail,
+      havePhone,
     );
 
     return { data, count };
