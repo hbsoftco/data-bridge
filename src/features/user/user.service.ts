@@ -138,7 +138,7 @@ export class UserService {
   }
 
   async getUserDataList(
-    userId: number,
+    id: number,
     page: number,
     pageSize: number,
     sessionType: string,
@@ -148,7 +148,7 @@ export class UserService {
   ) {
     const skip = (page - 1) * pageSize;
 
-    const whereClause: any = { user_id: userId };
+    const whereClause: any = { user_id: id };
 
     if (sessionType && sessionType !== null && sessionType !== 'null') {
       whereClause.sessionType = sessionType;
@@ -184,14 +184,14 @@ export class UserService {
   }
 
   async userDataCount(
-    userId: number,
+    id: number,
     sessionType: string,
     type: string,
     fromDate: string,
     toDate: string,
   ) {
     try {
-      const whereClause: any = { user_id: userId };
+      const whereClause: any = { user_id: id };
 
       if (sessionType && sessionType !== null && sessionType !== 'null') {
         whereClause.sessionType = sessionType;
