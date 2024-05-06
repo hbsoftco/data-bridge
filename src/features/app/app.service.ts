@@ -145,7 +145,7 @@ export class AppService {
       skip: (page - 1) * Number(pageSize),
       take: Number(pageSize),
       include: {
-        users: {
+        user: {
           select: {
             first_name: true,
             profile_picture: true,

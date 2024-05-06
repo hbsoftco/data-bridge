@@ -150,7 +150,7 @@ model subscriptions {
   extra                       String?                @db.LongText
   created_at                  DateTime?              @db.Timestamp(0)
   updated_at                  DateTime?              @db.Timestamp(0)
-  users                       users                  @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "subscriptions_users_FK")
+  user                        users                  @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "subscriptions_users_FK")
 
   @@index([user_id], map: "subscriptions_users_FK")
 }
