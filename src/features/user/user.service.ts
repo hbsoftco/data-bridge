@@ -290,7 +290,16 @@ export class UserService {
   async getUsersWithoutDefaultProfile(): Promise<number> {
     return await this.databaseService.users.count({
       where: {
-        profile_picture: { not: { contains: 'default_users_profile' } },
+        NOT: {
+          profile_picture: {
+            contains: 'default_users_profile',
+          },
+        },
+        AND: {
+          profile_picture: {
+            not: null,
+          },
+        },
       },
     });
   }
