@@ -57,9 +57,9 @@ export class UserController {
   }
 
   @UseGuards(ApiKeyGuard)
-  @Get('/data/:userId')
+  @Get(':id/data')
   async getUserDataList(
-    @Param('userId') userId: string,
+    @Param('userId') id: string,
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
     @Query('sessionType') sessionType: string,
@@ -68,7 +68,7 @@ export class UserController {
     @Query('toDate') toDate: string,
   ) {
     const data = await this.userService.getUserDataList(
-      +userId,
+      +id,
       page,
       pageSize,
       sessionType,
@@ -78,7 +78,7 @@ export class UserController {
     );
 
     const count = await this.userService.userDataCount(
-      +userId,
+      +id,
       sessionType,
       type,
       fromDate,
