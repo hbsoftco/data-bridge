@@ -116,12 +116,30 @@ export class UserController {
     const getFemaleUsersCount = await this.userService.getFemaleUsersCount();
     const getUnknownSexUsersCount =
       await this.userService.getUnknownSexUsersCount();
+    const getUsersWithEmailAndNullPhone =
+      await this.userService.getUsersWithEmailAndNullPhone();
+    const getUsersWithPhoneAndNullEmail =
+      await this.userService.getUsersWithPhoneAndNullEmail();
+    const getUsersWithPhoneAndEmail =
+      await this.userService.getUsersWithPhoneAndEmail();
+    const getUsersWithDefaultProfile =
+      await this.userService.getUsersWithDefaultProfile();
+    const getUsersWithoutDefaultProfile =
+      await this.userService.getUsersWithoutDefaultProfile();
+    const getUsersWithNullProfile =
+      await this.userService.getUsersWithNullProfile();
 
     return {
       getUsersCount,
       getMaleUsersCount,
       getFemaleUsersCount,
       getUnknownSexUsersCount,
+      getUsersWithEmailAndNullPhone,
+      getUsersWithPhoneAndNullEmail,
+      getUsersWithPhoneAndEmail,
+      getUsersWithDefaultProfile,
+      getUsersWithoutDefaultProfile,
+      getUsersWithNullProfile,
     };
   }
 }

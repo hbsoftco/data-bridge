@@ -251,4 +251,55 @@ export class UserService {
       where: { gender: null },
     });
   }
+
+  async getUsersWithEmailAndNullPhone(): Promise<number> {
+    return await this.databaseService.users.count({
+      where: {
+        email: { not: null },
+        phone: null,
+      },
+    });
+  }
+
+  async getUsersWithPhoneAndNullEmail(): Promise<number> {
+    return await this.databaseService.users.count({
+      where: {
+        phone: { not: null },
+        email: null,
+      },
+    });
+  }
+
+  async getUsersWithPhoneAndEmail(): Promise<number> {
+    return await this.databaseService.users.count({
+      where: {
+        phone: { not: null },
+        email: { not: null },
+      },
+    });
+  }
+
+  async getUsersWithDefaultProfile(): Promise<number> {
+    return await this.databaseService.users.count({
+      where: {
+        profile_picture: { contains: 'default_users_profile' },
+      },
+    });
+  }
+
+  async getUsersWithoutDefaultProfile(): Promise<number> {
+    return await this.databaseService.users.count({
+      where: {
+        profile_picture: { not: { contains: 'default_users_profile' } },
+      },
+    });
+  }
+
+  async getUsersWithNullProfile(): Promise<number> {
+    return await this.databaseService.users.count({
+      where: {
+        profile_picture: null,
+      },
+    });
+  }
 }
