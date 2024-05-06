@@ -213,6 +213,18 @@ model users {
   @@index([referrer_user_id], map: "users_referrer_user_id_foreign")
 }
 
+model custom_settings {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name       String?   @db.VarChar(255)
+  slug       String?   @db.VarChar(255)
+  type       String?   @db.VarChar(255)
+  status     Int       @default(0) @db.TinyInt
+  value      String?   @db.VarChar(255)
+  deleted_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+}
+
 enum tokens_app {
   step_counter
   step_up
