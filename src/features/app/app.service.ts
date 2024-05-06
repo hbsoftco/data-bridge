@@ -136,4 +136,33 @@ export class AppService {
     });
     return setting;
   }
+
+  async subscriptions(page: number, pageSize: number) {
+    const whereClause: any = {};
+
+    const subscriptions = await this.databaseService.subscriptions.findMany({
+      where: whereClause,
+      skip: (page - 1) * Number(pageSize),
+      take: Number(pageSize),
+      include: {
+        users: {
+          select: {
+            first_name: true,
+            profile_picture: true,
+            id: true,
+            gender: true,
+          },
+        },
+      },
+    });
+
+    // Convert BigInt values to string for each user
+    return subscriptions.map(convertBigIntToString);
+  }
+
+  async subscriptionsCount() {
+    try {
+      return await this.databaseService.subscriptions.count({});
+    } catch (error) {}
+  }
 }

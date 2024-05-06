@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateAppDto } from './dto/create-app.dto';
@@ -23,5 +23,17 @@ export class AppController {
   @Get()
   findAll() {
     return this.appService.findAppSetting();
+  }
+
+  @Get('/subscriptions')
+  async subscriptions(
+    @Query('page') page: number,
+    @Query('pageSize') pageSize: number,
+  ) {
+    const data = await this.appService.subscriptions(page, pageSize);
+
+    const count = await this.appService.subscriptionsCount();
+
+    return { data, count };
   }
 }
