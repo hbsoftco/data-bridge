@@ -114,6 +114,7 @@ export class UserController {
   @UseGuards(ApiKeyGuard)
   @Get('/statistics/users')
   async statistics() {
+    const getActiveUsers = await this.userService.getActiveUsers();
     const getUsersCount = await this.userService.getUsersCount();
     const getMaleUsersCount = await this.userService.getMaleUsersCount();
     const getFemaleUsersCount = await this.userService.getFemaleUsersCount();
@@ -133,6 +134,7 @@ export class UserController {
       await this.userService.getUsersWithNullProfile();
 
     return {
+      getActiveUsers,
       getUsersCount,
       getMaleUsersCount,
       getFemaleUsersCount,

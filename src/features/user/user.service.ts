@@ -331,4 +331,15 @@ export class UserService {
       },
     });
   }
+
+  async getActiveUsers(): Promise<number> {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    return await this.databaseService.users.count({
+      where: {
+        last_connection_date: {
+          gte: thirtyDaysAgo,
+        },
+      },
+    });
+  }
 }
