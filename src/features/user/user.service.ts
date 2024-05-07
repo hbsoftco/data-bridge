@@ -332,12 +332,42 @@ export class UserService {
     });
   }
 
+  async getNewUsersInMonth(): Promise<number> {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    return await this.databaseService.users.count({
+      where: {
+        created_at: {
+          gte: thirtyDaysAgo,
+        },
+      },
+    });
+  }
+
   async getActiveUsers(): Promise<number> {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     return await this.databaseService.users.count({
       where: {
         last_connection_date: {
           gte: thirtyDaysAgo,
+        },
+      },
+    });
+  }
+
+  async getNewUsersToday(): Promise<number> {
+    // Get today's date at 00:00:00
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    // Get today's date at 23:59:59
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+
+    return await this.databaseService.users.count({
+      where: {
+        created_at: {
+          gte: startOfToday,
+          lte: endOfToday,
         },
       },
     });
