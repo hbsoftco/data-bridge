@@ -353,6 +353,24 @@ export class UserService {
       },
     });
   }
+  async getActiveUsersToday(): Promise<number> {
+    // Get today's date at 00:00:00
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    // Get today's date at 23:59:59
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+
+    return await this.databaseService.users.count({
+      where: {
+        last_connection_date: {
+          gte: startOfToday,
+          lte: endOfToday,
+        },
+      },
+    });
+  }
 
   async getNewUsersToday(): Promise<number> {
     // Get today's date at 00:00:00

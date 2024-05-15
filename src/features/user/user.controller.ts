@@ -134,6 +134,7 @@ export class UserController {
       await this.userService.getUsersWithNullProfile();
     const getNewUsersToday = await this.userService.getNewUsersToday();
     const getNewUsersInMonth = await this.userService.getNewUsersInMonth();
+    const getActiveUsersToday = await this.userService.getActiveUsersToday();
 
     return {
       getActiveUsers,
@@ -149,6 +150,7 @@ export class UserController {
       getUsersWithDefaultProfile,
       getUsersWithoutDefaultProfile,
       getUsersWithNullProfile,
+      getActiveUsersToday,
     };
   }
 }
