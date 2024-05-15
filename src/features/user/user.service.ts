@@ -343,6 +343,28 @@ export class UserService {
     });
   }
 
+  async getNewUsersLastMonth(): Promise<number> {
+    // Get the first day of last month at 00:00:00
+    const startOfLastMonth = new Date();
+    startOfLastMonth.setMonth(startOfLastMonth.getMonth() - 1);
+    startOfLastMonth.setDate(1);
+    startOfLastMonth.setHours(0, 0, 0, 0);
+
+    // Get the last day of last month at 23:59:59
+    const endOfLastMonth = new Date();
+    endOfLastMonth.setMonth(endOfLastMonth.getMonth(), 0);
+    endOfLastMonth.setHours(23, 59, 59, 999);
+
+    return await this.databaseService.users.count({
+      where: {
+        created_at: {
+          gte: startOfLastMonth,
+          lte: endOfLastMonth,
+        },
+      },
+    });
+  }
+
   async getActiveUsers(): Promise<number> {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     return await this.databaseService.users.count({
@@ -367,6 +389,27 @@ export class UserService {
         last_connection_date: {
           gte: startOfToday,
           lte: endOfToday,
+        },
+      },
+    });
+  }
+
+  async getNewUsersYesterday(): Promise<number> {
+    // Get yesterday's date at 00:00:00
+    const startOfYesterday = new Date();
+    startOfYesterday.setDate(startOfYesterday.getDate() - 1);
+    startOfYesterday.setHours(0, 0, 0, 0);
+
+    // Get yesterday's date at 23:59:59
+    const endOfYesterday = new Date();
+    endOfYesterday.setDate(endOfYesterday.getDate() - 1);
+    endOfYesterday.setHours(23, 59, 59, 999);
+
+    return await this.databaseService.users.count({
+      where: {
+        created_at: {
+          gte: startOfYesterday,
+          lte: endOfYesterday,
         },
       },
     });
