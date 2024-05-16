@@ -24,8 +24,10 @@ export class UserController {
     @Query('pageSize') pageSize: number,
     @Query('filter') filter: string,
     @Query('sex') sex: number,
+    @Query('status') status: number,
     @Query('haveEmail') haveEmail: boolean,
     @Query('havePhone') havePhone: boolean,
+    @Query('notVerify') notVerify: boolean,
     @Query('fromDate') fromDate: string,
     @Query('toDate') toDate: string,
   ) {
@@ -35,7 +37,9 @@ export class UserController {
       filter,
       havePhone,
       haveEmail,
+      notVerify,
       sex,
+      status,
       fromDate,
       toDate,
     );
@@ -46,6 +50,8 @@ export class UserController {
       toDate,
       haveEmail,
       havePhone,
+      notVerify,
+      status,
     );
 
     return { data, count };
@@ -101,12 +107,32 @@ export class UserController {
 
   @UseGuards(ApiKeyGuard)
   @Get('/export/users')
-  async exportUsers(@Query('type') type: 'email' | 'phone') {
+  async exportUsers(
+    @Query('type') type: 'email' | 'phone',
+    @Query('filter') filter: string,
+    @Query('sex') sex: number,
+    @Query('status') status: number,
+    @Query('haveEmail') haveEmail: boolean,
+    @Query('havePhone') havePhone: boolean,
+    @Query('notVerify') notVerify: boolean,
+    @Query('fromDate') fromDate: string,
+    @Query('toDate') toDate: string,
+  ) {
     if (!type) {
       throw new BadRequestException('Parameter "type" is required.');
     }
 
-    const data = await this.userService.exportUsers(type);
+    const data = await this.userService.exportUsers(
+      type,
+      filter,
+      sex,
+      fromDate,
+      toDate,
+      haveEmail,
+      havePhone,
+      notVerify,
+      status,
+    );
 
     return { data };
   }

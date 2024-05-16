@@ -12,7 +12,9 @@ export class UserService {
     filter: string,
     haveEmail: boolean | string,
     havePhone: boolean | string,
+    notVerify: boolean | string,
     sex: number,
+    status: number,
     fromDate: string,
     toDate: string,
   ) {
@@ -25,6 +27,11 @@ export class UserService {
         { email: { contains: filter } },
         { phone: { contains: filter } },
       ];
+    }
+
+    // notVerify
+    if (notVerify == 'true' && notVerify) {
+      whereClause.verified = notVerify == 'true' ? 0 : 1;
     }
 
     // If haveEmail is true, add condition for email
@@ -44,6 +51,10 @@ export class UserService {
     // If sex is provided, add condition for gender
     if (sex == 0 || sex == 1) {
       whereClause.gender = sex == 0 ? 'female' : 'male';
+    }
+
+    if (status == 0 || status == 1) {
+      whereClause.blocked = Number(status);
     }
 
     if (
@@ -70,13 +81,74 @@ export class UserService {
     return users.map(convertBigIntToString);
   }
 
-  async exportUsers(type: 'email' | 'phone') {
-    const users = await this.databaseService.users.findMany({
-      where: {
-        [type]: {
-          not: null,
-        },
+  async exportUsers(
+    type: 'email' | 'phone',
+    filter: string,
+    sex: number,
+    fromDate: string,
+    toDate: string,
+    haveEmail: boolean | string,
+    havePhone: boolean | string,
+    notVerify: boolean | string,
+    status: number,
+  ) {
+    const whereClause: any = {
+      [type]: {
+        not: null,
       },
+    };
+
+    // If filter is provided, add condition for first_name
+    if (filter && filter !== null && filter !== 'null') {
+      whereClause.first_name = {
+        contains: filter,
+      };
+    }
+
+    // notVerify
+    if (notVerify == 'true' && notVerify) {
+      whereClause.verified = notVerify == 'true' ? 0 : 1;
+    }
+
+    // If haveEmail is true, add condition for email
+    if (haveEmail == 'true' && haveEmail) {
+      whereClause.email = {
+        not: null,
+      };
+    }
+
+    // If havePhone is true, add condition for email
+    if (havePhone == 'true' && havePhone) {
+      whereClause.phone = {
+        not: null,
+      };
+    }
+
+    // If sex is provided, add condition for gender
+    if (sex == 0 || sex == 1) {
+      whereClause.gender = sex == 0 ? 'female' : 'male';
+    }
+
+    if (status == 0 || status == 1) {
+      whereClause.blocked = Number(status);
+    }
+
+    if (
+      fromDate &&
+      fromDate !== null &&
+      fromDate !== 'null' &&
+      toDate &&
+      toDate !== null &&
+      toDate !== 'null'
+    ) {
+      whereClause.created_at = {
+        gte: new Date(fromDate),
+        lte: new Date(toDate),
+      };
+    }
+
+    const users = await this.databaseService.users.findMany({
+      where: whereClause,
       select: {
         [type]: true,
       },
@@ -104,6 +176,8 @@ export class UserService {
     toDate: string,
     haveEmail: boolean | string,
     havePhone: boolean | string,
+    notVerify: boolean | string,
+    status: number,
   ) {
     try {
       const whereClause: any = {};
@@ -113,6 +187,11 @@ export class UserService {
         whereClause.first_name = {
           contains: filter,
         };
+      }
+
+      // notVerify
+      if (notVerify == 'true' && notVerify) {
+        whereClause.verified = notVerify == 'true' ? 0 : 1;
       }
 
       // If haveEmail is true, add condition for email
@@ -132,6 +211,10 @@ export class UserService {
       // If sex is provided, add condition for gender
       if (sex == 0 || sex == 1) {
         whereClause.gender = sex == 0 ? 'female' : 'male';
+      }
+
+      if (status == 0 || status == 1) {
+        whereClause.blocked = Number(status);
       }
 
       if (
