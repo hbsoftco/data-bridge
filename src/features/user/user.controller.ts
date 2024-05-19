@@ -138,6 +138,24 @@ export class UserController {
   }
 
   @UseGuards(ApiKeyGuard)
+  @Get('/statistics/monthlyUsers')
+  async monthlyUsers(
+    @Query('firstOfMonthUTC') firstOfMonthUTC: string,
+    @Query('endOfMonthUTC') endOfMonthUTC: string,
+    // @Query('endOfStartDayOfMonthUTC') endOfStartDayOfMonthUTC: string,
+  ) {
+    const getMonthlyUsers = await this.userService.getMonthlyUsers(
+      firstOfMonthUTC,
+      endOfMonthUTC,
+      // endOfStartDayOfMonthUTC,
+    );
+
+    return {
+      getMonthlyUsers,
+    };
+  }
+
+  @UseGuards(ApiKeyGuard)
   @Get('/statistics/users')
   async statistics() {
     const getActiveUsers = await this.userService.getActiveUsers();

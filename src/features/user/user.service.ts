@@ -458,6 +458,7 @@ export class UserService {
       },
     });
   }
+
   async getActiveUsersToday(): Promise<number> {
     // Get today's date at 00:00:00
     const startOfToday = new Date();
@@ -475,6 +476,48 @@ export class UserService {
         },
       },
     });
+  }
+
+  async getMonthlyUsers(
+    firstOfMonthUTC: string,
+    endOfMonthUTC: string,
+  ): Promise<{ [date: string]: number }> {
+    // Convert the input strings to Date objects
+    const startOfMonth = new Date(firstOfMonthUTC);
+    const endOfMonth = new Date(endOfMonthUTC);
+
+    // Query the database for all new users in the month
+    const newUsers = await this.databaseService.users.findMany({
+      where: {
+        created_at: {
+          gte: startOfMonth,
+          lte: endOfMonth,
+        },
+      },
+      select: {
+        created_at: true,
+      },
+    });
+
+    // Initialize the result object with all dates of the month and a count of 0
+    const result: { [date: string]: number } = {};
+    for (
+      let day = startOfMonth;
+      day <= endOfMonth;
+      day.setDate(day.getDate() + 1)
+    ) {
+      result[day.toISOString().split('T')[0]] = 0;
+    }
+
+    // Update the result object with the actual counts
+    for (const user of newUsers) {
+      const date = user.created_at?.toISOString().split('T')[0];
+      if (date) {
+        result[date]++;
+      }
+    }
+
+    return result;
   }
 
   async getNewUsersYesterday(): Promise<number> {
