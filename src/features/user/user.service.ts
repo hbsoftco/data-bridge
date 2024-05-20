@@ -12,6 +12,8 @@ export class UserService {
     filter: string,
     haveEmail: boolean | string,
     havePhone: boolean | string,
+    justHaveEmail: boolean | string,
+    justHavePhone: boolean | string,
     notVerify: boolean | string,
     sex: number,
     status: number,
@@ -45,6 +47,26 @@ export class UserService {
     if (havePhone == 'true' && havePhone) {
       whereClause.phone = {
         not: null,
+      };
+    }
+
+    // If justHaveEmail is true, add condition for email
+    if (justHaveEmail == 'true' && justHaveEmail) {
+      whereClause.email = {
+        not: null,
+      };
+      whereClause.phone = {
+        equals: null,
+      };
+    }
+
+    // If justHavePhone is true, add condition for phone
+    if (justHavePhone == 'true' && justHavePhone) {
+      whereClause.phone = {
+        not: null,
+      };
+      whereClause.email = {
+        equals: null,
       };
     }
 
@@ -176,6 +198,8 @@ export class UserService {
     toDate: string,
     haveEmail: boolean | string,
     havePhone: boolean | string,
+    justHaveEmail: boolean | string,
+    justHavePhone: boolean | string,
     notVerify: boolean | string,
     status: number,
   ) {
@@ -205,6 +229,26 @@ export class UserService {
       if (havePhone == 'true' && havePhone) {
         whereClause.phone = {
           not: null,
+        };
+      }
+
+      // If justHaveEmail is true, add condition for email
+      if (justHaveEmail == 'true' && justHaveEmail) {
+        whereClause.email = {
+          not: null,
+        };
+        whereClause.phone = {
+          equals: null,
+        };
+      }
+
+      // If justHavePhone is true, add condition for phone
+      if (justHavePhone == 'true' && justHavePhone) {
+        whereClause.phone = {
+          not: null,
+        };
+        whereClause.email = {
+          equals: null,
         };
       }
 
