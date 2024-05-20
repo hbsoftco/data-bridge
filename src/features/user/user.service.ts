@@ -522,6 +522,46 @@ export class UserService {
     });
   }
 
+  async getAnnualUsers(
+    firstOfYearUTC: string,
+    endOfYearUTC: string,
+  ): Promise<{ [month: string]: number }> {
+    // Convert the input strings to Date objects
+    const startOfYear = new Date(firstOfYearUTC);
+    const endOfYear = new Date(endOfYearUTC);
+
+    // Query the database for all new users in the year
+    const newUsers = await this.databaseService.users.findMany({
+      where: {
+        created_at: {
+          gte: startOfYear,
+          lte: endOfYear,
+        },
+      },
+      select: {
+        created_at: true,
+      },
+    });
+
+    // Initialize the result object with all months of the year and a count of 0
+    const result: { [month: string]: number } = {};
+    for (let month = 0; month < 12; month++) {
+      const monthKey = `${startOfYear.getFullYear()}-${String(month + 1).padStart(2, '0')}`;
+      result[monthKey] = 0;
+    }
+
+    // Update the result object with the actual counts
+    for (const user of newUsers) {
+      const month = user.created_at?.getMonth();
+      if (month !== undefined) {
+        const monthKey = `${user.created_at?.getFullYear()}-${String(month + 1).padStart(2, '0')}`;
+        result[monthKey]++;
+      }
+    }
+
+    return result;
+  }
+
   async getMonthlyUsers(
     firstOfMonthUTC: string,
     endOfMonthUTC: string,

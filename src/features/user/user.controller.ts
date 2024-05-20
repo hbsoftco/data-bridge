@@ -162,6 +162,22 @@ export class UserController {
   }
 
   @UseGuards(ApiKeyGuard)
+  @Get('/statistics/annualUsers')
+  async annualUsers(
+    @Query('firstOfYearUTC') firstOfYearUTC: string,
+    @Query('endOfYearUTC') endOfYearUTC: string,
+  ) {
+    const getAnnualUsers = await this.userService.getAnnualUsers(
+      firstOfYearUTC,
+      endOfYearUTC,
+    );
+
+    return {
+      getAnnualUsers,
+    };
+  }
+
+  @UseGuards(ApiKeyGuard)
   @Get('/statistics/users')
   async statistics() {
     const getActiveUsers = await this.userService.getActiveUsers();
