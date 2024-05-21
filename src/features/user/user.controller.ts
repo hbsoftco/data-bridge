@@ -148,12 +148,12 @@ export class UserController {
   async monthlyUsers(
     @Query('firstOfMonthUTC') firstOfMonthUTC: string,
     @Query('endOfMonthUTC') endOfMonthUTC: string,
-    // @Query('endOfStartDayOfMonthUTC') endOfStartDayOfMonthUTC: string,
+    @Query('endOfStartDayOfMonthUTC') endOfStartDayOfMonthUTC: string,
   ) {
     const getMonthlyUsers = await this.userService.getMonthlyUsers(
       firstOfMonthUTC,
       endOfMonthUTC,
-      // endOfStartDayOfMonthUTC,
+      endOfStartDayOfMonthUTC,
     );
 
     return {
