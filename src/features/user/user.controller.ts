@@ -166,11 +166,15 @@ export class UserController {
   async annualUsers(
     @Query('firstOfYearUTC') firstOfYearUTC: string,
     @Query('endOfYearUTC') endOfYearUTC: string,
+    @Query('endOfFirstMonthDayUTC') endOfFirstMonthDayUTC: string,
   ) {
     const getAnnualUsers = await this.userService.getAnnualUsers(
       firstOfYearUTC,
       endOfYearUTC,
+      // endOfFirstMonthDayUTC,
     );
+
+    console.log(endOfFirstMonthDayUTC);
 
     return {
       getAnnualUsers,

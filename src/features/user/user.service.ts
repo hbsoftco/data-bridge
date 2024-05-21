@@ -525,10 +525,12 @@ export class UserService {
   async getAnnualUsers(
     firstOfYearUTC: string,
     endOfYearUTC: string,
+    // endOfFirstMonthDayUTC: string,
   ): Promise<{ [month: string]: number }> {
     // Convert the input strings to Date objects
     const startOfYear = new Date(firstOfYearUTC);
     const endOfYear = new Date(endOfYearUTC);
+    // const endOfFirstMonthDay = new Date(endOfFirstMonthDayUTC);
 
     // Query the database for all new users in the year
     const newUsers = await this.databaseService.users.findMany({
@@ -543,25 +545,77 @@ export class UserService {
       },
     });
 
-    // Initialize the result object with all months of the year and a count of 0
-    const result: { [month: string]: number } = {};
+    // Initialize an object to hold the user counts for each month
+    const monthlyUserCounts: { [month: string]: number } = {};
+
+    // Iterate through each month of the year
     for (let month = 0; month < 12; month++) {
-      const monthKey = `${startOfYear.getFullYear()}-${String(month + 1).padStart(2, '0')}`;
-      result[monthKey] = 0;
+      const startOfMonth = new Date(
+        Date.UTC(startOfYear.getUTCFullYear(), month, 1),
+      );
+      const endOfMonth = new Date(
+        Date.UTC(startOfYear.getUTCFullYear(), month + 1, 0),
+      );
+
+      // Count users for the current month
+      const count = newUsers.filter((user) => {
+        if (!user.created_at) return false;
+        const createdAt = new Date(user.created_at);
+        return createdAt >= startOfMonth && createdAt <= endOfMonth;
+      }).length;
+
+      // Format the month as YYYY-MM
+      const formattedMonth = `${startOfYear.getUTCFullYear()}-${String(month + 1).padStart(2, '0')}`;
+
+      // Store the count in the object
+      monthlyUserCounts[formattedMonth] = count;
     }
 
-    // Update the result object with the actual counts
-    for (const user of newUsers) {
-      const month = user.created_at?.getUTCMonth();
-      const year = user.created_at?.getUTCFullYear();
-      if (month) {
-        const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
-        result[monthKey]++;
-      }
-    }
-
-    return result;
+    return monthlyUserCounts;
   }
+
+  // async getAnnualUsers(
+  //   firstOfYearUTC: string,
+  //   endOfYearUTC: string,
+  //   endOfFirstMonthDayUTC: string,
+  // ): Promise<{ [month: string]: number }> {
+  //   // Convert the input strings to Date objects
+  //   const startOfYear = new Date(firstOfYearUTC);
+  //   const endOfYear = new Date(endOfYearUTC);
+  //   const endOfFirstMonthDay = new Date(endOfFirstMonthDayUTC);
+
+  //   // Query the database for all new users in the year
+  //   const newUsers = await this.databaseService.users.findMany({
+  //     where: {
+  //       created_at: {
+  //         gte: startOfYear,
+  //         lte: endOfYear,
+  //       },
+  //     },
+  //     select: {
+  //       created_at: true,
+  //     },
+  //   });
+
+  //   // Initialize the result object with all months of the year and a count of 0
+  //   const result: { [month: string]: number } = {};
+  //   for (let month = 0; month < 12; month++) {
+  //     const monthKey = `${startOfYear.getFullYear()}-${String(month + 1).padStart(2, '0')}`;
+  //     result[monthKey] = 0;
+  //   }
+
+  //   // Update the result object with the actual counts
+  //   for (const user of newUsers) {
+  //     const month = user.created_at?.getUTCMonth();
+  //     const year = user.created_at?.getUTCFullYear();
+  //     if (month) {
+  //       const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
+  //       result[monthKey]++;
+  //     }
+  //   }
+
+  //   return result;
+  // }
 
   async getMonthlyUsers(
     firstOfMonthUTC: string,
@@ -616,35 +670,6 @@ export class UserService {
 
     return userCounts;
   }
-
-  // async getMonthlyUsers(
-  //   firstOfMonthUTC: string,
-  //   endOfMonthUTC: string,
-  //   endOfStartDayOfMonthUTC: string,
-  // ) {
-  //   // Convert the input strings to Date objects
-  //   const startOfMonth = new Date(firstOfMonthUTC);
-  //   const endOfMonth = new Date(endOfMonthUTC);
-  //   const endOfStartDayOfMonth = new Date(endOfStartDayOfMonthUTC);
-
-  //   console.log(startOfMonth);
-  //   console.log(endOfStartDayOfMonth);
-
-  //   // Query the database for all new users in the month
-  //   const newUsers = await this.databaseService.users.findMany({
-  //     where: {
-  //       created_at: {
-  //         gte: startOfMonth,
-  //         lte: endOfMonth,
-  //       },
-  //     },
-  //     select: {
-  //       created_at: true,
-  //     },
-  //   });
-
-  //   return newUsers;
-  // }
 
   async getNewUsersYesterday(): Promise<number> {
     // Get yesterday's date at 00:00:00
